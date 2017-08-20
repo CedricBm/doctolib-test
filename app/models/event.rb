@@ -1,7 +1,4 @@
 class Event < ActiveRecord::Base
-  SLOT_DURATION = 30.minutes
-  DAYS_IN_WEEK = 7
-
   enum kind: {opening: "opening", appointment: "appointment"}
 
   validates :kind, :starts_at, :ends_at, presence: true
@@ -58,7 +55,7 @@ class Event < ActiveRecord::Base
       true
     elsif self.kind == Event.kinds[:opening] && self.weekly_recurring
       days_count_between_dates = self.starts_at.to_date.upto(date).count
-      days_count_between_dates % DAYS_IN_WEEK == 1 # the recurring event reoccurs at the same day
+      days_count_between_dates % ENV['DAYS_IN_WEEK'].to_i == 1 # the recurring event reoccurs at the same day
     else
       false
     end
@@ -70,7 +67,7 @@ class Event < ActiveRecord::Base
 
     while begin_time < self.ends_at do
       slots << begin_time.strftime('%H:%M')
-      begin_time += SLOT_DURATION
+      begin_time += ENV['SLOT_DURATION'].to_i.minutes
     end
 
     slots
