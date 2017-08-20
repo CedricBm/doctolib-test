@@ -48,4 +48,10 @@ class EventTest < ActiveSupport::TestCase
     end
   end
 
+  test "can't have an appointment if no open slots" do
+    assert_raise ActiveRecord::RecordInvalid do
+      Event.create! kind: 'appointment', starts_at: DateTime.parse("2017-08-17 13:30"), ends_at: DateTime.parse("2017-08-17 14:00")
+    end
+  end
+
 end

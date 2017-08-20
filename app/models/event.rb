@@ -5,7 +5,7 @@ class Event < ActiveRecord::Base
   enum kind: {opening: "opening", appointment: "appointment"}
 
   validates :kind, :starts_at, :ends_at, presence: true
-  validates_with EventValidator, if: Proc.new { |e| e.starts_at.present? && e.ends_at.present? }
+  validates_with EventValidator, if: Proc.new {|e| e.kind.present? && e.starts_at.present? && e.ends_at.present?}
 
   class Availability
     attr_accessor :date, :slots
@@ -31,7 +31,7 @@ class Event < ActiveRecord::Base
       def extract_slots_of_events(events)
         slots = []
 
-        events.each do |event|
+        events&.each do |event|
           slots += event.extract_slots if event.is_date_corresponding?(@date)
         end
 
@@ -76,15 +76,13 @@ class Event < ActiveRecord::Base
     slots
   end
 
-  private
-
-    # We could fetch only the relevant events that match the following assertions :
-    # 1) if an event is an opening and it is weekly recurrent.
-    # 2) if an event is an opening and it is not weekly recurrent but the slots are in the week period requested.
-    # 3) if an event is an appointment and the slots are in the week period requested.
-    # But that would be overengineering and would be necessary only if there are a lot of data.
-    def self.compute_events_by_kind
-      Event.order(starts_at: :asc).group_by(&:kind)
-    end
+  # We could fetch only the relevant events that match the following assertions :
+  # 1) if an event is an opening and it is weekly recurrent.
+  # 2) if an event is an opening and it is not weekly recurrent but the slots are in the week period requested.
+  # 3) if an event is an appointment and the slots are in the week period requested.
+  # But that would be overengineering and would be necessary only if there are a lot of data.
+  def self.compute_events_by_kind
+    Event.order(starts_at: :asc).group_by(&:kind)
+  end
 
 end
