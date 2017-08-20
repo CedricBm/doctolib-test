@@ -22,4 +22,18 @@ class EventTest < ActiveSupport::TestCase
     end
   end
 
+  test "kind, starts_at and ends_at attributes must be present" do
+    assert_raise ActiveRecord::RecordInvalid do
+      Event.create! starts_at: DateTime.parse("2017-08-17 09:30"), ends_at: DateTime.parse("2017-08-17 12:30")
+    end
+
+    assert_raise ActiveRecord::RecordInvalid do
+      Event.create! kind: 'opening', ends_at: DateTime.parse("2017-08-17 12:30")
+    end
+
+    assert_raise ActiveRecord::RecordInvalid do
+      Event.create! kind: 'opening', starts_at: DateTime.parse("2017-08-17 09:30")
+    end
+  end
+
 end

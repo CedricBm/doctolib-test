@@ -4,6 +4,8 @@ class Event < ActiveRecord::Base
 
   enum kind: {opening: "opening", appointment: "appointment"}
 
+  validates :kind, :starts_at, :ends_at, presence: true
+
   class Availability
     attr_accessor :date, :slots
 
