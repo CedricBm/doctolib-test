@@ -5,6 +5,7 @@ class Event < ActiveRecord::Base
   enum kind: {opening: "opening", appointment: "appointment"}
 
   validates :kind, :starts_at, :ends_at, presence: true
+  validates_with EventValidator, if: Proc.new { |e| e.starts_at.present? && e.ends_at.present? }
 
   class Availability
     attr_accessor :date, :slots
