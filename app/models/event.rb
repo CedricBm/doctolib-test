@@ -2,6 +2,8 @@ class Event < ActiveRecord::Base
   SLOT_DURATION = 30.minutes
   DAYS_IN_WEEK = 7
 
+  enum kind: {opening: "opening", appointment: "appointment"}
+
   class Availability
     attr_accessor :date, :slots
 
@@ -17,8 +19,8 @@ class Event < ActiveRecord::Base
     private
 
       def compute_slots(events_by_kind)
-        booked_slots = extract_slots_of_events(events_by_kind["appointment"])
-        open_slots = extract_slots_of_events(events_by_kind["opening"])
+        booked_slots = extract_slots_of_events(events_by_kind[Event.kinds[:appointment]])
+        open_slots = extract_slots_of_events(events_by_kind[Event.kinds[:opening]])
 
         open_slots - booked_slots
       end
@@ -51,7 +53,7 @@ class Event < ActiveRecord::Base
   def is_date_corresponding?(date)
     if self.starts_at.to_date == date
       true
-    elsif self.kind == "opening" && self.weekly_recurring
+    elsif self.kind == Event.kinds[:opening] && self.weekly_recurring
       days_count_between_dates = self.starts_at.to_date.upto(date).count
       days_count_between_dates % DAYS_IN_WEEK == 1 # the recurring event reoccurs at the same day
     else
