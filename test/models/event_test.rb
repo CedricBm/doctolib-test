@@ -80,4 +80,24 @@ class EventTest < ActiveSupport::TestCase
     end
   end
 
+  test "two openings having the same slot are seen as one" do
+    Event.create! kind: 'opening', starts_at: DateTime.parse("2017-08-09 09:30"), ends_at: DateTime.parse("2017-08-09 10:00"), weekly_recurring: true
+    Event.create! kind: 'opening', starts_at: DateTime.parse("2017-08-16 09:30"), ends_at: DateTime.parse("2017-08-16 10:00")
+
+    availabilities = Event.availabilities DateTime.parse("2017-08-16")
+
+    assert_equal ["9:30"], availabilities[0][:slots]
+  end
+
+  test "can't book twice in the same slot even if there are two openings that contain that slot" do
+    Event.create! kind: 'opening', starts_at: DateTime.parse("2017-08-10 09:30"), ends_at: DateTime.parse("2017-08-10 10:00"), weekly_recurring: true
+    Event.create! kind: 'opening', starts_at: DateTime.parse("2017-08-17 09:30"), ends_at: DateTime.parse("2017-08-17 10:00")
+
+    Event.create! kind: 'appointment', starts_at: DateTime.parse("2017-08-17 09:30"), ends_at: DateTime.parse("2017-08-17 10:00")
+
+    assert_raise ActiveRecord::RecordInvalid do
+      Event.create! kind: 'appointment', starts_at: DateTime.parse("2017-08-17 09:30"), ends_at: DateTime.parse("2017-08-17 10:00")
+    end
+  end
+
 end

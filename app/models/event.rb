@@ -32,7 +32,7 @@ class Event < ActiveRecord::Base
           slots += event.extract_slots if event.is_date_corresponding?(@date)
         end
 
-        slots
+        slots.uniq
       end
 
   end
@@ -49,7 +49,6 @@ class Event < ActiveRecord::Base
     availabilities.map(&:to_hash)
   end
 
-  # I'll assume that an event starts and ends the same day
   def is_date_corresponding?(date)
     if self.starts_at.to_date == date
       true
