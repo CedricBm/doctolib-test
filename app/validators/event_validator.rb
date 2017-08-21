@@ -25,7 +25,7 @@ class EventValidator < ActiveModel::Validator
       already_booked_slots = appointment.extract_slots - availability.slots
 
       if already_booked_slots.present?
-        appointment.errors[:starts_at] << "one or all slots are already booked in that period"
+        appointment.errors[:starts_at] << "there are no open slot in that period"
       end
     end
 

@@ -72,4 +72,12 @@ class EventTest < ActiveSupport::TestCase
     end
   end
 
+  test "recurrent openings are only available in the future and not the past" do
+    Event.create! kind: 'opening', starts_at: DateTime.parse("2017-08-22 09:30"), ends_at: DateTime.parse("2017-08-22 12:30"), weekly_recurring: true
+
+    assert_raise ActiveRecord::RecordInvalid do
+      Event.create! kind: 'appointment', starts_at: DateTime.parse("2017-08-15 10:30"), ends_at: DateTime.parse("2017-08-15 11:30")
+    end
+  end
+
 end
