@@ -3,6 +3,7 @@ class EventValidator < ActiveModel::Validator
     validates_starts_and_ends_the_same_day(event)
     validates_ends_after_the_start(event)
     validates_appointment_has_open_slots(event) if event.kind == Event.kinds[:appointment]
+    validates_whole_number_of_slots(event)
   end
 
   private
@@ -25,6 +26,14 @@ class EventValidator < ActiveModel::Validator
 
       if already_booked_slots.present?
         appointment.errors[:starts_at] << "one or all slots are already booked in that period"
+      end
+    end
+
+    def validates_whole_number_of_slots(event)
+      difference_in_minutes = (event.ends_at - event.starts_at) / ENV['NUMBER_OF_SECONDS_IN_A_MINUTE'].to_i
+
+      unless difference_in_minutes % 30 == 0
+        event.errors[:ends_at] << "must have a whole number of slots in the event"
       end
     end
 end

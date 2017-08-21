@@ -54,4 +54,13 @@ class EventTest < ActiveSupport::TestCase
     end
   end
 
+  test "the number of slots in an event is whole" do
+    assert_raise ActiveRecord::RecordInvalid do
+      starts_at = DateTime.parse("2014-08-04 14:30")
+      ends_at = starts_at + (ENV['SLOT_DURATION'].to_i * 1.5).minutes
+
+      Event.create! kind: 'opening', starts_at: starts_at, ends_at: ends_at
+    end
+  end
+
 end
