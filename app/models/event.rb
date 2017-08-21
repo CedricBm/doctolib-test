@@ -66,7 +66,7 @@ class Event < ActiveRecord::Base
     begin_time = self.starts_at
 
     while begin_time < self.ends_at do
-      slots << begin_time.strftime('%H:%M')
+      slots << begin_time.strftime('%-H:%M')
       begin_time += ENV['SLOT_DURATION'].to_i.minutes
     end
 

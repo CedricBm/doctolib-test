@@ -11,7 +11,7 @@ class EventTest < ActiveSupport::TestCase
     assert_equal Date.new(2014, 8, 10), availabilities[0][:date]
     assert_equal [], availabilities[0][:slots]
     assert_equal Date.new(2014, 8, 11), availabilities[1][:date]
-    assert_equal ["09:30", "10:00", "11:30", "12:00"], availabilities[1][:slots]
+    assert_equal ["9:30", "10:00", "11:30", "12:00"], availabilities[1][:slots]
     assert_equal Date.new(2014, 8, 16), availabilities[6][:date]
     assert_equal 7, availabilities.length
   end
