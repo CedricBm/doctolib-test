@@ -16,6 +16,15 @@ class EventTest < ActiveSupport::TestCase
     assert_equal 7, availabilities.length
   end
 
+  test "second simple test" do
+
+    Event.create kind: 'opening', starts_at: DateTime.parse("2017-08-21 09:30"), ends_at: DateTime.parse("2017-08-21 12:30")
+    Event.create kind: 'appointment', starts_at: DateTime.parse("2017-08-21 10:30"), ends_at: DateTime.parse("2017-08-21 11:30")
+
+    availabilities = Event.availabilities DateTime.parse("2017-08-21")
+    assert_equal ["9:30", "10:00", "11:30", "12:00"], availabilities[0][:slots]
+  end
+
   test "kind attribute has a correct value" do
     assert_raise ArgumentError do
       Event.create kind: 'booked', starts_at: DateTime.parse("2014-08-04 09:30"), ends_at: DateTime.parse("2014-08-04 12:30"), weekly_recurring: true
