@@ -39,7 +39,7 @@ class Event < ActiveRecord::Base
 
   def self.availabilities(begin_date)
     availabilities = []
-    events_by_kind = compute_events_by_kind
+    events_by_kind = compute_events_by_kind(begin_date)
 
     # for the next 7 days beginning at the begin_date
     (0..6).each do |offset|
@@ -77,8 +77,15 @@ class Event < ActiveRecord::Base
   # 2) if an event is an opening and it is not weekly recurrent but the slots are in the week period requested.
   # 3) if an event is an appointment and the slots are in the week period requested.
   # But that would be overengineering and would be necessary only if there are a lot of data.
-  def self.compute_events_by_kind
-    Event.order(starts_at: :asc).group_by(&:kind)
+  # Edit: I implemented it.
+  def self.compute_events_by_kind(begin_date)
+    begin_date = begin_date.to_date
+    end_date = begin_date + 1.week
+    where_condition = "(starts_at BETWEEN ? AND ?) OR (kind = ? AND weekly_recurring = 't')"
+
+    Event.where(where_condition, begin_date, end_date, Event.kinds[:opening])
+         .order(starts_at: :asc)
+         .group_by(&:kind)
   end
 
 end

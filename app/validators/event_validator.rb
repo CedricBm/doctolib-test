@@ -21,8 +21,8 @@ class EventValidator < ActiveModel::Validator
     end
 
     def validates_appointment_has_open_slots(appointment)
-      availability = Event::Availability.new(appointment.starts_at.to_date, Event.compute_events_by_kind)
-      already_booked_slots = appointment.extract_slots - availability.slots
+      availabilities = Event.availabilities(appointment.starts_at.to_date)
+      already_booked_slots = appointment.extract_slots - availabilities[0][:slots]
 
       if already_booked_slots.present?
         appointment.errors[:starts_at] << "there are no open slot in that period"
